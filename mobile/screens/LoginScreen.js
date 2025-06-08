@@ -14,9 +14,18 @@ export default function LoginScreen({ navigation }) {
     }
     try {
       // IMPORTANTE: Use o IP da sua máquina aqui!
-      const res = await axios.post('http://192.168.0.127:3001/auth/login', { email, senha });
+      const res = await axios.post('http://192.168.100.8:3001/auth/login', { email, senha });
       // Salve o token em algum lugar (Context/AsyncStorage)
-      navigation.replace('Home', { user: res.data });
+      const user = res.data;
+
+    if (user.tipo === 'coordenador') {
+  navigation.replace('DashboardCoordenador', { user });
+}  else if (user.tipo === 'cliente') {
+   navigation.replace('DashboardCliente', { user });
+  } else {
+  setErro('Tipo de usuário inválido');
+}
+
     } catch (err) {
       console.error(err); // Bom para ver o erro detalhado no terminal
       setErro('Usuário ou senha inválidos');
