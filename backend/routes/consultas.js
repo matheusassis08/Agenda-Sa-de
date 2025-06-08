@@ -16,11 +16,18 @@ const auth = (req, res, next) => {
 };
 
 // Coordenador adiciona horários (associa aluno ao horário)
-router.post('/criar-horario', auth, async (req, res) => {
-  if (req.user.tipo !== 'coordenador') return res.status(403).send('Apenas coordenador pode.');
-  const { aluno, dataHora } = req.body;
-  await Consulta.create({ aluno, dataHora });
-  res.send('Horário criado');
+router.post('/criar-horario', async (req, res) => {
+  try {
+    const { aluno, dataHora } = req.body;
+    if (!aluno || !dataHora) {
+      return res.status(400).send('Dados incompletos: Faltando aluno ou dataHora.');
+    }
+
+    await Consulta.create({ aluno, dataHora });
+    res.status(201).send('Horário criado'); // Boa prática: retornar 201 para criação
+  } catch(error) {
+    res.status(500).json({ error: 'Ocorreu um erro no servidor.' });
+  }
 });
 
 // Cliente solicita pre-agendamento

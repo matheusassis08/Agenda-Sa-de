@@ -2,7 +2,8 @@ import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { View, Text, StyleSheet } from 'react-native';
 import CadastrarAlunoScreen from './CadastrarAlunoScreen';
-import AdicionarHorarioScreen from './AdicionarHorarioScreen'; // Importado corretamente
+import AdicionarHorarioScreen from './AdicionarHorarioScreen';
+import VisualizarHorariosScreen from './VisualizarHorariosScreen';
 
 const Drawer = createDrawerNavigator();
 
@@ -77,18 +78,10 @@ export default function DashboardCoordenador() {
     <Drawer.Navigator initialRouteName="Boas Vindas">
       <Drawer.Screen name="Boas Vindas" component={BoasVindas} />
       <Drawer.Screen name="Confirmar Consultas" component={ConfirmarConsultas} />
-      
-      {/* CORRIGIDO: Usando o componente ExcluirConsulta que já existe */}
       <Drawer.Screen name="Cancelar Consulta" component={ExcluirConsulta} /> 
-      
       <Drawer.Screen name="Visualizar Consultas" component={VisualizarConsultas} />
-      
-      {/* CORRIGIDO: Usando o nome correto do componente importado */}
       <Drawer.Screen name="Adicionar Horário" component={AdicionarHorarioScreen} />
-      
-      {/* REMOVIDO: O componente 'Cancelarhorario' não existe. Vamos remover a linha para evitar o erro. */}
-      {/* <Drawer.Screen name="Cancelar Horário" component={Cancelarhorario} /> */}
-      
+      <Drawer.Screen name="Visualizar Horários" component={VisualizarHorariosScreen} />
       <Drawer.Screen name="Gerar Relatório" component={GerarRelatorio} />
       <Drawer.Screen name="Cadastrar Aluno" component={CadastrarAlunoScreen} />
     </Drawer.Navigator>

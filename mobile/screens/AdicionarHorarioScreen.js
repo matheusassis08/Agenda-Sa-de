@@ -1,157 +1,136 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, Platform, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, Button, StyleSheet, Alert, ScrollView, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { MaterialIcons } from '@expo/vector-icons';
+
+// Coloque seu IP aqui para facilitar a manutenção
+const API_URL = 'http://192.168.0.127:3001'; 
 
 export default function AdicionarHorarioScreen() {
+  // Estados para os dados do formulário
   const [alunos, setAlunos] = useState([]);
   const [alunoSelecionado, setAlunoSelecionado] = useState(null);
-  const [date, setDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [time, setTime] = useState(new Date());
-  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [dataHora, setDataHora] = useState(''); // Simplificado: um único campo de texto
 
+  // Estados de controle da UI
+  const [loading, setIsLoading] = useState(false);
+  const [loadingAlunos, setLoadingAlunos] = useState(true);
+
+  // Busca a lista de alunos uma única vez quando a tela é montada
   useEffect(() => {
+    console.log('[EFEITO] Buscando lista de alunos...');
     const fetchAlunos = async () => {
       try {
-        const response = await axios.get('http://192.168.0.127:3001/api/users/alunos');
+        const response = await axios.get(`${API_URL}/api/users/alunos`);
         setAlunos(response.data);
+        console.log('[EFEITO] Alunos carregados com sucesso:', response.data.length);
       } catch (error) {
-        Alert.alert('Erro', 'Não foi possível carregar a lista de alunos.');
+        console.error('[EFEITO] Erro ao carregar alunos:', error);
+        Alert.alert('Erro Crítico', 'Não foi possível carregar a lista de alunos. Verifique a conexão com a API.');
+      } finally {
+        setLoadingAlunos(false);
       }
     };
     fetchAlunos();
-  }, []);
+  }, []); // O array vazio [] garante que isso rode apenas uma vez
 
-  const onChangeDate = (event, selectedDate) => {
-    setShowDatePicker(Platform.OS === 'ios');
-    if (selectedDate) {
-      setDate(selectedDate);
+  const handleSalvarHorario = async () => {
+    console.log('--- [AÇÃO] Botão Salvar Horário Pressionado ---');
+    
+    // 1. Validação dos dados
+    if (!alunoSelecionado || !dataHora) {
+      Alert.alert('Erro de Validação', 'Por favor, selecione um aluno e preencha a data e hora.');
+      console.log('[VALIDAÇÃO] Falhou. Aluno ou Data/Hora estão vazios.');
+      return;
     }
-  };
-
-  const onChangeTime = (event, selectedTime) => {
-    setShowTimePicker(Platform.OS === 'ios');
-    if (selectedTime) {
-      setTime(selectedTime);
+    // Validação simples do formato da data/hora
+    if (!/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(dataHora)) {
+        Alert.alert('Formato Inválido', 'Use o formato AAAA-MM-DD HH:MM para a data e hora.');
+        console.log('[VALIDAÇÃO] Falhou. Formato de data/hora incorreto.');
+        return;
     }
-  };
+    
+    setIsLoading(true);
 
-  const formatarDataBrasileira = (date) => date.toLocaleDateString('pt-BR');
-  const formatarHora = (date) => date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    // 2. Preparação dos dados para envio
+    // Converte a string de data/hora local para um objeto Date e depois para o formato UTC (ISO)
+    const [dataParte, horaParte] = dataHora.split(' ');
+    const dataHoraISO = new Date(`${dataParte}T${horaParte}:00`).toISOString();
 
-  const handleAdicionarHorario = async () => {
-    if (!alunoSelecionado) {
-      return Alert.alert('Erro', 'Por favor, selecione um aluno.');
-    }
+    const payload = {
+      aluno: alunoSelecionado,
+      dataHora: dataHoraISO,
+    };
+    
+    console.log('[PAYLOAD] Dados que serão enviados para a API:', payload);
 
-    // --- LÓGICA DE DATA E HORA CORRIGIDA ---
-    const dataFinal = new Date(date);
-    dataFinal.setHours(time.getHours());
-    dataFinal.setMinutes(time.getMinutes());
-    dataFinal.setSeconds(0);
-    // --- FIM DA CORREÇÃO ---
-
-    // =========================================================================
-    // ATENÇÃO: PARA TESTAR, VOCÊ PRECISA DE UM TOKEN DE COORDENADOR VÁLIDO.
-    // Faça login como coordenador e cole o token recebido aqui.
-    const tokenCoordenador = "COLE_SEU_TOKEN_DE_COORDENADOR_AQUI";
-    // =========================================================================
-
-    if (tokenCoordenador.startsWith("COLE_SEU_TOKEN")) {
-      return Alert.alert('Atenção', 'Insira um token de coordenador válido no código para testar.');
-    }
-
+    // 3. Chamada à API (com a rota de teste sem segurança)
     try {
-      await axios.post('http://192.168.0.127:3001/consultas/criar-horario', 
-        {
-          aluno: alunoSelecionado,
-          dataHora: dataFinal.toISOString(), // Envia a data e hora combinadas
-        }, 
-        {
-          headers: {
-            'Authorization': `Bearer ${tokenCoordenador}`
-          }
-        }
-      );
-
+      const response = await axios.post(`${API_URL}/consultas/criar-horario`, payload);
+      
+      console.log('[SUCESSO] Resposta da API:', response.data);
       Alert.alert('Sucesso!', 'Novo horário disponível cadastrado com sucesso.');
+      
+      // Limpa o formulário
       setAlunoSelecionado(null);
-      setDate(new Date());
-      setTime(new Date());
+      setDataHora('');
 
     } catch (error) {
-      console.error("ERRO AO CRIAR HORÁRIO:", error.response?.data);
-      Alert.alert('Erro ao Salvar', error.response?.data || 'Não foi possível salvar o horário.');
+      console.error('[ERRO] A chamada à API falhou. Detalhes do erro:', error.response?.data || error.message);
+      Alert.alert('Erro ao Salvar', error.response?.data?.error || 'Não foi possível salvar o horário. Verifique os terminais.');
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  if (loadingAlunos) {
+    return <View style={styles.container}><ActivityIndicator size="large" /><Text>Carregando alunos...</Text></View>;
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>Adicionar Horário Disponível</Text>
-        
-        <Text style={styles.label}>Selecione o Aluno</Text>
-        <View style={styles.pickerContainer}>
-            <Picker
-                selectedValue={alunoSelecionado}
-                onValueChange={(itemValue) => setAlunoSelecionado(itemValue)}
-                style={styles.picker}
-            >
-                <Picker.Item label="-- Escolha um aluno --" value={null} />
-                {alunos.map((aluno) => (
-                    <Picker.Item key={aluno._id} label={aluno.nome} value={aluno._id} />
-                ))}
-            </Picker>
-        </View>
+      <Text style={styles.title}>Adicionar Horário Disponível</Text>
+      
+      <Text style={styles.label}>Selecione o Aluno</Text>
+      <View style={styles.pickerContainer}>
+        <Picker 
+            selectedValue={alunoSelecionado} 
+            onValueChange={(itemValue) => {
+                console.log('[INPUT] Aluno selecionado:', itemValue);
+                setAlunoSelecionado(itemValue);
+            }}
+        >
+          <Picker.Item label="-- Escolha um aluno --" value={null} />
+          {alunos.map(aluno => <Picker.Item key={aluno._id} label={aluno.nome} value={aluno._id} />)}
+        </Picker>
+      </View>
 
-        <Text style={styles.label}>Data da Consulta</Text>
-        <TouchableOpacity style={styles.dateInput} onPress={() => setShowDatePicker(true)}>
-            <Text style={styles.dateText}>{formatarDataBrasileira(date)}</Text>
-            <MaterialIcons name="calendar-today" size={20} color="#555" />
-        </TouchableOpacity>
+      <Text style={styles.label}>Data e Hora da Consulta</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="AAAA-MM-DD HH:MM"
+        value={dataHora}
+        onChangeText={(text) => {
+            console.log('[INPUT] Texto da data/hora alterado:', text);
+            setDataHora(text);
+        }}
+      />
 
-        <Text style={styles.label}>Hora da Consulta</Text>
-        <TouchableOpacity style={styles.dateInput} onPress={() => setShowTimePicker(true)}>
-            <Text style={styles.dateText}>{formatarHora(time)}</Text>
-            <MaterialIcons name="access-time" size={20} color="#555" />
-        </TouchableOpacity>
-
-        {showDatePicker && (
-            <DateTimePicker
-                value={date}
-                mode="date"
-                display="default"
-                onChange={onChangeDate}
-            />
+      <View style={{ marginTop: 20 }}>
+        {isLoading ? (
+            <ActivityIndicator size="large" color="#007BFF" />
+        ) : (
+            <Button title="Salvar Horário" onPress={handleSalvarHorario} />
         )}
-
-        {showTimePicker && (
-            <DateTimePicker
-                value={time}
-                mode="time"
-                display="default"
-                onChange={onChangeTime}
-                is24Hour={true}
-            />
-        )}
-
-        <TouchableOpacity style={styles.button} onPress={handleAdicionarHorario}>
-            <Text style={styles.buttonText}>Salvar Horário</Text>
-        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flexGrow: 1, padding: 24, backgroundColor: '#f5f5f5' },
-  title: { fontSize: 22, fontWeight: 'bold', textAlign: 'center', marginBottom: 30, color: '#2c3e50' },
-  label: { fontSize: 16, fontWeight: '600', marginBottom: 8, color: '#34495e', marginTop: 10 },
-  pickerContainer: { borderWidth: 1, borderColor: '#ddd', borderRadius: 8, marginBottom: 16, backgroundColor: 'white' },
-  picker: { height: 50 },
-  dateInput: { borderWidth: 1, borderColor: '#ddd', padding: 15, borderRadius: 8, marginBottom: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'white' },
-  dateText: { fontSize: 16, color: '#333' },
-  button: { backgroundColor: '#3498db', padding: 15, borderRadius: 8, alignItems: 'center', marginTop: 20 },
-  buttonText: { color: 'white', fontSize: 16, fontWeight: 'bold' }
+  container: { flexGrow: 1, justifyContent: 'center', padding: 24 },
+  title: { fontSize: 22, fontWeight: 'bold', textAlign: 'center', marginBottom: 20 },
+  label: { fontSize: 16, fontWeight: 'bold', marginBottom: 8 },
+  input: { borderWidth: 1, borderColor: '#ccc', padding: 10, borderRadius: 5, marginBottom: 20, fontSize: 16 },
+  pickerContainer: { borderWidth: 1, borderColor: '#ccc', borderRadius: 5, marginBottom: 20 },
 });
