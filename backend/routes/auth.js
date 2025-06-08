@@ -6,14 +6,32 @@ const router = express.Router();
 
 router.post('/register', async (req, res) => {
   try {
-    const { nome, email, senha, tipo } = req.body;
+    // Agora pegamos também os campos telefone e matricula do corpo da requisição
+    const { nome, email, senha, tipo, telefone, matricula } = req.body;
+
     const hashed = await bcrypt.hash(senha, 10);
-    await User.create({ nome, email, senha: hashed, tipo });
-    res.status(201).send('Usuário cadastrado!');
+
+    // Criamos o usuário com todos os dados recebidos
+    // Se um campo for undefined (ex: matricula para um cliente), ele será ignorado pelo Mongoose
+    await User.create({ 
+        nome, 
+        email, 
+        senha: hashed, 
+        tipo,
+        telefone,
+        matricula
+    });
+
+    res.status(201).send('Usuário cadastrado com sucesso!');
   } catch (err) {
+    // Tratamento de erro melhorado para dar mais detalhes
+    if (err.code === 11000) { // Código de erro para chave duplicada (e-mail)
+        return res.status(400).json({ error: 'Este e-mail já está em uso.' });
+    }
     res.status(400).json({ error: err.message });
   }
 });
+
 
 router.post('/login', async (req, res) => {
   const { email, senha } = req.body;
