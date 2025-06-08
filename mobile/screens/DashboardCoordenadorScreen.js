@@ -1,9 +1,12 @@
 import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { View, Text, StyleSheet } from 'react-native';
+import CadastrarAlunoScreen from './CadastrarAlunoScreen';
+import AdicionarHorarioScreen from './AdicionarHorarioScreen'; // Importado corretamente
 
 const Drawer = createDrawerNavigator();
 
+// Telas de placeholder (sem alterações aqui)
 function BoasVindas() {
   return (
     <View style={styles.container}>
@@ -52,6 +55,7 @@ function CadastrarConsulta() {
   );
 }
 
+// O nome desta função é ExcluirConsulta
 function ExcluirConsulta() {
   return (
     <View style={styles.container}>
@@ -73,16 +77,25 @@ export default function DashboardCoordenador() {
     <Drawer.Navigator initialRouteName="Boas Vindas">
       <Drawer.Screen name="Boas Vindas" component={BoasVindas} />
       <Drawer.Screen name="Confirmar Consultas" component={ConfirmarConsultas} />
-      <Drawer.Screen name="Gerar Relatório" component={GerarRelatorio} />
-      <Drawer.Screen name="Gerenciar Perfis" component={GerenciarPerfis} />
+      
+      {/* CORRIGIDO: Usando o componente ExcluirConsulta que já existe */}
+      <Drawer.Screen name="Cancelar Consulta" component={ExcluirConsulta} /> 
+      
       <Drawer.Screen name="Visualizar Consultas" component={VisualizarConsultas} />
-      <Drawer.Screen name="Cadastrar Consulta" component={CadastrarConsulta} />
-      <Drawer.Screen name="Excluir Consulta" component={ExcluirConsulta} />
-      <Drawer.Screen name="Alterar Consulta" component={AlterarConsulta} />
+      
+      {/* CORRIGIDO: Usando o nome correto do componente importado */}
+      <Drawer.Screen name="Adicionar Horário" component={AdicionarHorarioScreen} />
+      
+      {/* REMOVIDO: O componente 'Cancelarhorario' não existe. Vamos remover a linha para evitar o erro. */}
+      {/* <Drawer.Screen name="Cancelar Horário" component={Cancelarhorario} /> */}
+      
+      <Drawer.Screen name="Gerar Relatório" component={GerarRelatorio} />
+      <Drawer.Screen name="Cadastrar Aluno" component={CadastrarAlunoScreen} />
     </Drawer.Navigator>
   );
 }
 
+// Estilos (sem alterações)
 const styles = StyleSheet.create({
   container: {
     flex: 1,

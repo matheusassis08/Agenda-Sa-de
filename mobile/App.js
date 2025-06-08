@@ -3,27 +3,35 @@ import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-// Telas principais
+// Importação de todas as telas necessárias
+import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import CadastroScreen from './screens/CadastroScreen';
-import DashboardCoordenadorScreen from './screens/DashboardCoordenadorScreen';
+import DashboardCoordenador from './screens/DashboardCoordenadorScreen';
 import DashboardClienteScreen from './screens/DashboardClienteScreen';
-// import HomeScreen from './screens/HomeScreen'; // Remova se não usar mais
+import DashboardAlunoScreen from './screens/DashboardAlunoScreen';
 
 const Stack = createStackNavigator();
-
 function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
+      <Stack.Navigator 
+        initialRouteName="Login" 
+        screenOptions={{ headerShown: false }} // Opcional: esconde o cabeçalho em todas as telas
+      >
+        {/* Telas públicas */}
         <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Cadastro" component={CadastroScreen} />
-        <Stack.Screen name="DashboardCoordenador" component={DashboardCoordenadorScreen} />
+        <Stack.Screen name="Cadastro" component={CadastroScreen} options={{ headerShown: true, title: 'Criar Conta' }} />
+
+        {/* Telas de Dashboard para cada tipo de usuário */}
+        <Stack.Screen name="DashboardCoordenador" component={DashboardCoordenador} />
         <Stack.Screen name="DashboardCliente" component={DashboardClienteScreen} />
-        {/* <Stack.Screen name="Home" component={HomeScreen} /> */}
+        <Stack.Screen name="DashboardAluno" component={DashboardAlunoScreen} />
+        
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
 
+// Registra o componente App como o principal do aplicativo
 registerRootComponent(App);

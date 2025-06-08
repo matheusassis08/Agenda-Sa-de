@@ -13,22 +13,25 @@ export default function LoginScreen({ navigation }) {
         return;
     }
     try {
-      // IMPORTANTE: Use o IP da sua máquina aqui!
-      const res = await axios.post('http://192.168.100.8:3001/auth/login', { email, senha });
-      // Salve o token em algum lugar (Context/AsyncStorage)
+      // Use o IP da sua máquina aqui!
+      const res = await axios.post('http://192.168.0.127:3001/auth/login', { email, senha });
       const user = res.data;
 
-    if (user.tipo === 'coordenador') {
-  navigation.replace('DashboardCoordenador', { user });
-}  else if (user.tipo === 'cliente') {
-   navigation.replace('DashboardCliente', { user });
-  } else {
-  setErro('Tipo de usuário inválido');
-}
+      // --- LÓGICA DE NAVEGAÇÃO CORRIGIDA ---
+      if (user.tipo === 'coordenador') {
+        navigation.replace('DashboardCoordenador', { user });
+      } else if (user.tipo === 'cliente') {
+        navigation.replace('DashboardCliente', { user });
+      } else if (user.tipo === 'aluno') {
+        navigation.replace('DashboardAluno', { user });
+      } else {
+        setErro('Tipo de usuário desconhecido.');
+      }
+      // --- FIM DA CORREÇÃO ---
 
     } catch (err) {
-      console.error(err); // Bom para ver o erro detalhado no terminal
-      setErro('Usuário ou senha inválidos');
+      console.error(err);
+      setErro(err.response?.data || 'Usuário ou senha inválidos');
     }
   };
 

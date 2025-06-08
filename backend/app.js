@@ -16,3 +16,5 @@ app.use('/consultas',require('./routes/consultas'));
 
 // Linha que inicia o servidor e mostra a mensagem
 app.listen(3001, () => console.log('Backend rodando na porta 3001!'));
+
+app.use('/api/users', require('./routes/users'));
