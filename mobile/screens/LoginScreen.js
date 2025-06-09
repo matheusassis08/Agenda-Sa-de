@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
 import axios from 'axios';
 
+const API_URL = 'http://192.168.100.8:3001'; // Confirme o IP da sua máquina
+
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -9,29 +11,36 @@ export default function LoginScreen({ navigation }) {
 
   const login = async () => {
     if (!email || !senha) {
-        setErro('Preencha e-mail e senha.');
-        return;
+      setErro('Preencha e-mail e senha.');
+      return;
     }
+
     try {
-      // Use o IP da sua máquina aqui!
-      const res = await axios.post('http://192.168.0.127:3001/auth/login', { email, senha });
+      const res = await axios.post(`${API_URL}/auth/login`, { email, senha });
       const user = res.data;
 
-      // --- LÓGICA DE NAVEGAÇÃO CORRIGIDA ---
-      if (user.tipo === 'coordenador') {
-        navigation.replace('DashboardCoordenador', { user });
-      } else if (user.tipo === 'cliente') {
-        navigation.replace('DashboardCliente', { user });
-      } else if (user.tipo === 'aluno') {
-        navigation.replace('DashboardAluno', { user });
-      } else {
-        setErro('Tipo de usuário desconhecido.');
+      if (!user?.tipo) {
+        setErro('Resposta do servidor inválida: tipo de usuário ausente.');
+        return;
       }
-      // --- FIM DA CORREÇÃO ---
 
+      switch (user.tipo) {
+        case 'coordenador':
+          navigation.replace('DashboardCoordenador', { user });
+          break;
+        case 'cliente':
+          navigation.replace('DashboardCliente', { user });
+          break;
+        case 'aluno':
+          navigation.replace('DashboardAluno', { user });
+          break;
+        default:
+          setErro('Tipo de usuário desconhecido.');
+      }
     } catch (err) {
-      console.error(err);
-      setErro(err.response?.data || 'Usuário ou senha inválidos');
+      console.error('Erro ao fazer login:', err);
+      const mensagemErro = err.response?.data?.error || err.response?.data || 'Usuário ou senha inválidos.';
+      setErro(typeof mensagemErro === 'string' ? mensagemErro : 'Erro inesperado no login.');
     }
   };
 
@@ -61,21 +70,21 @@ export default function LoginScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        padding: 24,
-    },
-    input: {
-        marginBottom: 12,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 4,
-        padding: 10,
-    },
-    errorText: {
-        marginTop: 10,
-        color: 'red',
-        textAlign: 'center'
-    }
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 24,
+  },
+  input: {
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 4,
+    padding: 10,
+  },
+  errorText: {
+    marginTop: 10,
+    color: 'red',
+    textAlign: 'center',
+  },
 });

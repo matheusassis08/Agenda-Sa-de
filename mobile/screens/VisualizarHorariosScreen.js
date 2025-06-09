@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.0.127:3001'; // Use seu IP local
+const API_URL = 'http://192.168.100.8:3001'; // Use seu IP local
 
 const HorarioItem = ({ item }) => (
   <View style={styles.itemContainer}>

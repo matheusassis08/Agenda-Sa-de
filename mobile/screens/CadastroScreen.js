@@ -31,7 +31,7 @@ export default function CadastroScreen({ navigation }) {
 
     try {
       // Lembre-se de usar o seu IP local real aqui
-      const response = await axios.post('http://192.168.0.127:3001/auth/register', dadosCadastro);
+      const response = await axios.post('http://192.168.100.8:3001/auth/register', dadosCadastro);
       Alert.alert('Sucesso', response.data);
       navigation.navigate('Login');
     } catch (error) {

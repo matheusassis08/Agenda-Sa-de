@@ -7,31 +7,38 @@ import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import CadastroScreen from './screens/CadastroScreen';
-import DashboardCoordenador from './screens/DashboardCoordenadorScreen';
+import DashboardCoordenadorScreen from './screens/DashboardCoordenadorScreen';
 import DashboardClienteScreen from './screens/DashboardClienteScreen';
 import DashboardAlunoScreen from './screens/DashboardAlunoScreen';
 
 const Stack = createStackNavigator();
+
 function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator 
         initialRouteName="Login" 
-        screenOptions={{ headerShown: false }} // Opcional: esconde o cabeçalho em todas as telas
+        screenOptions={{ headerShown: false }} // Oculta cabeçalhos por padrão
       >
         {/* Telas públicas */}
         <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Cadastro" component={CadastroScreen} options={{ headerShown: true, title: 'Criar Conta' }} />
+        <Stack.Screen 
+          name="Cadastro" 
+          component={CadastroScreen} 
+          options={{ headerShown: true, title: 'Criar Conta' }} 
+        />
 
-        {/* Telas de Dashboard para cada tipo de usuário */}
-        <Stack.Screen name="DashboardCoordenador" component={DashboardCoordenador} />
+        {/* Telas privadas: após login */}
+        <Stack.Screen name="DashboardCoordenador" component={DashboardCoordenadorScreen} />
         <Stack.Screen name="DashboardCliente" component={DashboardClienteScreen} />
         <Stack.Screen name="DashboardAluno" component={DashboardAlunoScreen} />
-        
+
+        {/* Tela opcional: Home, se desejar usar */}
+        {/* <Stack.Screen name="Home" component={HomeScreen} /> */}
+
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
 
-// Registra o componente App como o principal do aplicativo
 registerRootComponent(App);
