@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator, RefreshControl } from 'react-native';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.100.8:3001'; // Use seu IP local
+const API_URL = 'http://192.168.0.127:3001'; // Use seu IP local
 
 const HorarioItem = ({ item }) => (
   <View style={styles.itemContainer}>
@@ -25,11 +25,9 @@ export default function VisualizarHorariosScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchHorarios = async () => {
-    const tokenCoordenador = "COLE_SEU_TOKEN_DE_COORDENADOR_AQUI"; // <-- COLE O TOKEN AQUI
     try {
-      const response = await axios.get(`${API_URL}/consultas/disponiveis`, {
-        headers: { 'Authorization': `Bearer ${tokenCoordenador}` }
-      });
+      // CHAMADA AXIOS SIMPLIFICADA, SEM TOKEN E SEM HEADERS
+      const response = await axios.get(`${API_URL}/consultas/disponiveis`);
       setHorarios(response.data);
     } catch (error) {
       console.error("Erro ao buscar horários:", error.response?.data);
@@ -40,6 +38,7 @@ export default function VisualizarHorariosScreen() {
     }
   };
 
+  // O useEffect e o onRefresh continuam iguais, chamando a nova fetchHorarios
   useEffect(() => {
     fetchHorarios();
   }, []);
@@ -50,7 +49,7 @@ export default function VisualizarHorariosScreen() {
   };
 
   if (loading) {
-    return <ActivityIndicator size="large" style={{ flex: 1 }} />;
+    return <ActivityIndicator size="large" style={{ flex: 1, justifyContent: 'center' }} />;
   }
 
   return (

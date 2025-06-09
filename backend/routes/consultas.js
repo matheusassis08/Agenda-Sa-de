@@ -63,9 +63,14 @@ router.get('/aluno', auth, async (req, res) => {
 });
 
 // Consultar horários/alunos disponíveis
-router.get('/disponiveis', auth, async (req, res) => {
-  const horarios = await Consulta.find({ status: 'pendente', cliente: null }).populate('aluno');
-  res.json(horarios);
+router.get('/disponiveis', async (req, res) => {
+  try {
+    const horarios = await Consulta.find({ status: 'pendente', cliente: null }).populate('aluno');
+    res.json(horarios);
+  } catch (error) {
+    console.error('Erro ao buscar horários disponíveis:', error);
+    res.status(500).json({ error: 'Ocorreu um erro no servidor.' });
+  }
 });
 
 module.exports = router;
