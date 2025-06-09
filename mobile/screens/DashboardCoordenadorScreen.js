@@ -1,5 +1,5 @@
 import React from 'react';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
 import { View, Text, StyleSheet } from 'react-native';
 import CadastrarAlunoScreen from './CadastrarAlunoScreen';
 import AdicionarHorarioScreen from './AdicionarHorarioScreen';
@@ -7,7 +7,6 @@ import VisualizarHorariosScreen from './VisualizarHorariosScreen';
 
 const Drawer = createDrawerNavigator();
 
-// Telas de placeholder (sem alterações aqui)
 function BoasVindas() {
   return (
     <View style={styles.container}>
@@ -56,7 +55,6 @@ function CadastrarConsulta() {
   );
 }
 
-// O nome desta função é ExcluirConsulta
 function ExcluirConsulta() {
   return (
     <View style={styles.container}>
@@ -73,12 +71,24 @@ function AlterarConsulta() {
   );
 }
 
-export default function DashboardCoordenador() {
+export default function DashboardCoordenador({ navigation }) {
   return (
-    <Drawer.Navigator initialRouteName="Boas Vindas">
+    <Drawer.Navigator
+      initialRouteName="Boas Vindas"
+      drawerContent={(props) => (
+        <DrawerContentScrollView {...props}>
+          <DrawerItemList {...props} />
+          <DrawerItem
+            label="Sair"
+            onPress={() => props.navigation.replace('Login')}
+            labelStyle={{ color: 'red' }}
+          />
+        </DrawerContentScrollView>
+      )}
+    >
       <Drawer.Screen name="Boas Vindas" component={BoasVindas} />
       <Drawer.Screen name="Confirmar Consultas" component={ConfirmarConsultas} />
-      <Drawer.Screen name="Cancelar Consulta" component={ExcluirConsulta} /> 
+      <Drawer.Screen name="Cancelar Consulta" component={ExcluirConsulta} />
       <Drawer.Screen name="Visualizar Consultas" component={VisualizarConsultas} />
       <Drawer.Screen name="Adicionar Horário" component={AdicionarHorarioScreen} />
       <Drawer.Screen name="Visualizar Horários" component={VisualizarHorariosScreen} />
@@ -88,16 +98,15 @@ export default function DashboardCoordenador() {
   );
 }
 
-// Estilos (sem alterações)
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   welcome: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333'
-  }
+    color: '#333',
+  },
 });

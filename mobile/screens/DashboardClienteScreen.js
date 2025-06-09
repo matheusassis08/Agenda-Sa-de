@@ -1,5 +1,10 @@
 import React from 'react';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItemList,
+  DrawerItem
+} from '@react-navigation/drawer';
 import { View, Text, StyleSheet } from 'react-native';
 
 const Drawer = createDrawerNavigator();
@@ -44,9 +49,21 @@ function VisualizarConsultas() {
   );
 }
 
-export default function DashboardCliente() {
+export default function DashboardCliente({ navigation }) {
   return (
-    <Drawer.Navigator initialRouteName="Boas Vindas">
+    <Drawer.Navigator
+      initialRouteName="Boas Vindas"
+      drawerContent={(props) => (
+        <DrawerContentScrollView {...props}>
+          <DrawerItemList {...props} />
+          <DrawerItem
+            label="Sair"
+            onPress={() => props.navigation.replace('Login')}
+            labelStyle={{ color: 'red' }}
+          />
+        </DrawerContentScrollView>
+      )}
+    >
       <Drawer.Screen name="Boas Vindas" component={BoasVindas} />
       <Drawer.Screen name="Solicitar Consulta" component={SolicitarConsulta} />
       <Drawer.Screen name="Cancelar Consulta" component={CancelarConsulta} />
