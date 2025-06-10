@@ -4,7 +4,7 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, 
 import axios from 'axios';
 
 const Drawer = createDrawerNavigator();
-const API_URL = 'http://192.168.0.127:3001'; // Seu backend
+const API_URL = 'http://192.168.1.11:3001';
 
 function ListaAlunosDisponiveis() {
   const [alunos, setAlunos] = useState([]);
