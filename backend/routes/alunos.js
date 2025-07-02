@@ -1,17 +1,16 @@
 const express = require('express');
+const User = require('../models/User');
 const router = express.Router();
-const Aluno = require('../models/Aluno'); // Certifique-se que o caminho está correto
 
-// GET /alunos - retorna a lista de alunos
+// Rota para buscar todos os utilizadores com o tipo 'aluno'
 router.get('/', async (req, res) => {
   try {
-    const alunos = await Aluno.find();
+    // Busca na coleção 'User' filtrando por tipo e selecionando apenas os campos 'id' e 'nome'
+    const alunos = await User.find({ tipo: 'aluno' }, 'id nome'); 
     res.json(alunos);
   } catch (error) {
-    console.error('Erro ao buscar alunos:', error);
-    res.status(500).json({ message: 'Erro ao buscar alunos.' });
+    res.status(500).json({ error: 'Erro ao buscar alunos.' });
   }
 });
 
 module.exports = router;
-

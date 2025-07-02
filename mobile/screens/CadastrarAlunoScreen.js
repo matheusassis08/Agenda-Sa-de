@@ -3,7 +3,7 @@ import { View, Text, TextInput, Button, StyleSheet, Alert, ScrollView, ActivityI
 import axios from 'axios';
 
 // Melhora 1: Mover a URL da API para uma constante, facilitando a alteração.
-const API_URL = 'http://192.168.1.10:3001'; // <-- CONFIRA SE ESTE IP ESTÁ CORRETO
+const API_URL = 'http://192.168.0.127:3001'; // <-- CONFIRA SE ESTE IP ESTÁ CORRETO
 
 export default function CadastrarAlunoScreen({ navigation }) {
   const [nome, setNome] = useState('');
