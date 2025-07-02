@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.100.8:3001'; // Confirme o IP da sua máquina
+const API_URL = 'http://192.168.1.10:3001'; // Confirme o IP da sua máquina
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');

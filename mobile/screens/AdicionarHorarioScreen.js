@@ -5,7 +5,7 @@ import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { MaterialIcons } from '@expo/vector-icons'; // Ícones para um visual melhor
 
-const API_URL = 'http://192.168.100.8:3001'; // <-- VERIFIQUE SE SEU IP CONTINUA O MESMO
+const API_URL = 'http://192.168.1.10:3001'; // <-- VERIFIQUE SE SEU IP CONTINUA O MESMO
 
 export default function AdicionarHorarioScreen() {
   const [alunos, setAlunos] = useState([]);

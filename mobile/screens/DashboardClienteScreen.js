@@ -4,7 +4,7 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, 
 import axios from 'axios';
 
 const Drawer = createDrawerNavigator();
-const API_URL = 'http://192.168.100.8:3001'; // Seu backend
+const API_URL = 'http://192.168.1.10:3001'; // Ajuste para o IP correto do seu backend
 
 function ListaAlunosDisponiveis() {
   const [alunos, setAlunos] = useState([]);
@@ -12,6 +12,7 @@ function ListaAlunosDisponiveis() {
 
   const fetchAlunos = async () => {
     try {
+      setLoading(true); // garante loading ao iniciar requisição
       const response = await axios.get(`${API_URL}/alunos`);
       setAlunos(response.data);
     } catch (error) {
@@ -28,7 +29,7 @@ function ListaAlunosDisponiveis() {
 
   const agendarConsulta = (aluno) => {
     Alert.alert('Agendamento', `Consulta solicitada com ${aluno.nome}.`);
-    // Aqui você pode chamar uma rota POST de agendamento, se quiser
+    // Aqui você pode integrar a rota POST para agendar de verdade
   };
 
   if (loading) {
@@ -52,6 +53,7 @@ function ListaAlunosDisponiveis() {
           </TouchableOpacity>
         )}
         ListEmptyComponent={<Text style={styles.subtitle}>Nenhum aluno disponível.</Text>}
+        initialNumToRender={10} // melhora performance inicial
       />
     </View>
   );
