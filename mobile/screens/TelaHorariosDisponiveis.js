@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, RefreshControl } from 'react-native';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.0.127:3001'; // Use o seu IP local
+const API_URL = 'http://192.168.100.8:3001'; // Use o seu IP local
 
 export default function TelaHorariosDisponiveis({ userData }) {
   const [horarios, setHorarios] = useState([]);

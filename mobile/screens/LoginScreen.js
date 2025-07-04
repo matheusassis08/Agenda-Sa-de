@@ -3,7 +3,7 @@ import { View, TextInput, Button, Text, StyleSheet, ActivityIndicator, Touchable
 import axios from 'axios';
 
 // Lembre-se de usar o IP da sua máquina que está a rodar o backend
-const API_URL = 'http://192.168.0.127:3001'; 
+const API_URL = 'http://192.168.100.8:3001'; 
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');

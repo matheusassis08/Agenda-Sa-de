@@ -4,7 +4,7 @@ import { View, Text, FlatList, StyleSheet, ActivityIndicator, Alert, RefreshCont
 import axios from 'axios';
 
 const Drawer = createDrawerNavigator();
-const API_URL = 'http://192.168.0.127:3001'; // Use o seu IP local
+const API_URL = 'http://192.168.100.8:3001'; // Use o seu IP local
 
 // Função para dar cor e texto ao status
 const getStatusStyle = (status) => {
