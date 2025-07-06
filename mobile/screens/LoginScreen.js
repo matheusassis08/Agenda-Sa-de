@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, TextInput, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 
-// Lembre-se de usar o IP da sua máquina que está a rodar o backend
-const API_URL = 'http://192.168.100.8:3001'; 
+const API_URL = 'http://192.168.100.8:3001';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -22,12 +21,13 @@ export default function LoginScreen({ navigation }) {
     try {
       const res = await axios.post(`${API_URL}/auth/login`, { email, senha });
       const data = res.data;
+
       if (!data?.tipo || !data?.token) {
         setErro('Resposta do servidor inválida.');
         setLoading(false);
         return;
       }
-      
+
       const { tipo } = data;
       let routeName = '';
       if (tipo === 'coordenador') routeName = 'DashboardCoordenador';
@@ -38,7 +38,7 @@ export default function LoginScreen({ navigation }) {
         setLoading(false);
         return;
       }
-      
+
       navigation.replace(routeName, { userData: data });
 
     } catch (err) {
@@ -51,25 +51,89 @@ export default function LoginScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Clínica Escola</Text>
-      <Text style={styles.subtitle}>Acesse o seu painel</Text>
-      <TextInput placeholder="E-mail" value={email} onChangeText={setEmail} autoCapitalize="none" style={styles.input} keyboardType="email-address"/>
-      <TextInput placeholder="Senha" value={senha} onChangeText={setSenha} secureTextEntry style={styles.input} />
-      {loading ? <ActivityIndicator size="large" /> : <Button title="Entrar" onPress={login} />}
-      <TouchableOpacity onPress={() => navigation.navigate('Cadastro')} style={styles.signupButton}>
-        <Text style={styles.signupText}>Não tem uma conta? Cadastre-se</Text>
+      <Image
+        source={require('../assets/images/logoufvjm.png')}
+        style={styles.logo}
+        resizeMode="contain"
+      />
+
+      <Text style={styles.label}>E-mail</Text>
+      <TextInput
+        placeholder="Digite seu e-mail"
+        value={email}
+        onChangeText={setEmail}
+        style={styles.input}
+        autoCapitalize="none"
+      />
+
+      <Text style={styles.label}>Senha</Text>
+      <TextInput
+        placeholder="Digite sua senha"
+        value={senha}
+        onChangeText={setSenha}
+        secureTextEntry
+        style={styles.input}
+      />
+
+      <TouchableOpacity>
+        <Text style={styles.forgotText}>Esqueci minha senha</Text>
       </TouchableOpacity>
+
+      {loading ? (
+        <ActivityIndicator size="large" />
+      ) : (
+        <TouchableOpacity style={styles.button} onPress={login}>
+          <Text style={styles.buttonText}>Entrar</Text>
+        </TouchableOpacity>
+      )}
+
+      <TouchableOpacity onPress={() => navigation.navigate('Cadastro')}>
+        <Text style={styles.registerText}>Quero me cadastrar</Text>
+      </TouchableOpacity>
+
       {!!erro && <Text style={styles.errorText}>{erro}</Text>}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 24, backgroundColor: '#f8f9fa' },
-  title: { fontSize: 32, fontWeight: 'bold', textAlign: 'center' },
-  subtitle: { fontSize: 16, textAlign: 'center', color: '#6c757d', marginBottom: 32 },
-  input: { marginBottom: 16, borderWidth: 1, borderColor: '#ced4da', backgroundColor: 'white', borderRadius: 8, padding: 12, fontSize: 16 },
-  errorText: { marginTop: 15, fontSize: 16, color: '#dc3545', textAlign: 'center' },
-  signupButton: { marginTop: 20 },
-  signupText: { color: '#007bff', textAlign: 'center', fontSize: 16 }
+  container: { flex: 1, justifyContent: 'center', padding: 24, backgroundColor: 'white' },
+  logo: { width: 200, height: 100, alignSelf: 'center', marginBottom: 32 },
+  label: { fontSize: 14, color: '#333', marginBottom: 4, marginTop: 16 },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    padding: 12,
+    borderRadius: 8,
+    backgroundColor: '#f9f9f9'
+  },
+  forgotText: {
+    textAlign: 'right',
+    color: '#007bff',
+    fontSize: 14,
+    marginTop: 8
+  },
+  button: {
+    backgroundColor: '#007bff',
+    padding: 14,
+    borderRadius: 8,
+    marginTop: 24
+  },
+  buttonText: {
+    color: '#fff',
+    textAlign: 'center',
+    fontWeight: 'bold'
+  },
+  registerText: {
+    textAlign: 'center',
+    marginTop: 20,
+    color: '#007bff',
+    fontSize: 16
+  },
+  errorText: {
+    marginTop: 20,
+    textAlign: 'center',
+    color: '#dc3545',
+    fontSize: 14
+  }
 });
