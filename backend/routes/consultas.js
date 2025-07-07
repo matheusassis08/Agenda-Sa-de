@@ -29,18 +29,24 @@ router.get('/disponiveis', async (req, res) => {
 
 // Rota para o CLIENTE fazer um pré-agendamento (sem token)
 router.put('/agendar/:id', async (req, res) => {
-    try {
-        const { clienteId } = req.body;
-        if (!clienteId) return res.status(400).json({ message: 'ID do cliente é obrigatório.' });
-        const consulta = await Consulta.findByIdAndUpdate(
-            req.params.id, 
-            { cliente: clienteId, status: 'pendente' },
-            { new: true }
-        );
-        if (!consulta) return res.status(404).json({ message: 'Horário não encontrado.' });
-        res.status(200).json({ message: 'Solicitação de agendamento enviada!', consulta });
-    } catch (error) { res.status(500).json({ message: 'Erro no servidor ao agendar.' }); }
+  try {
+    const { clienteId, motivo } = req.body;
+    if (!clienteId) return res.status(400).json({ message: 'ID do cliente é obrigatório.' });
+
+    const consulta = await Consulta.findByIdAndUpdate(
+      req.params.id,
+      { cliente: clienteId, status: 'pendente', motivo: motivo || '' },
+      { new: true }
+    );
+
+    if (!consulta) return res.status(404).json({ message: 'Horário não encontrado.' });
+
+    res.status(200).json({ message: 'Solicitação de agendamento enviada!', consulta });
+  } catch (error) {
+    res.status(500).json({ message: 'Erro no servidor ao agendar.' });
+  }
 });
+
 
 // Rota para COORDENADOR excluir um horário (sem token, conforme solicitado)
 router.delete('/:id', async (req, res) => {
@@ -80,10 +86,15 @@ router.post('/criar-horario', auth, async (req, res) => {
 router.get('/pendentes', auth, async (req, res) => {
     if (req.user.tipo !== 'coordenador') return res.status(403).json({ message: 'Acesso negado.' });
     try {
-        const pendentes = await Consulta.find({ status: 'pendente' }).populate('cliente', 'nome email').populate('aluno', 'nome');
+        const pendentes = await Consulta.find({ status: 'pendente' })
+            .populate('cliente', 'nome email')
+            .populate('aluno', 'nome');
         res.json(pendentes);
-    } catch (error) { res.status(500).json({ error: 'Erro no servidor.' }); }
+    } catch (error) {
+        res.status(500).json({ error: 'Erro no servidor.' });
+    }
 });
+
 
 // Rota para o COORDENADOR confirmar um agendamento
 router.post('/confirmar/:id', auth, async (req, res) => {

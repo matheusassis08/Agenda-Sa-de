@@ -19,7 +19,12 @@ const consultaSchema = new mongoose.Schema({
     type: String,
     enum: ['disponivel', 'pendente', 'confirmada', 'cancelada'],
     default: 'disponivel'
+  },
+  motivo: {
+    type: String,
+    default: ''
   }
 });
 
 module.exports = mongoose.model('Consulta', consultaSchema);
+
