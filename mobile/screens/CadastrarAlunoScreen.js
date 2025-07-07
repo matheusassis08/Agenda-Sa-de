@@ -14,7 +14,7 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.100.8:3001'; // Altere se necessário
+const API_URL = 'http://192.168.100.8:3001'; // Use o IP da sua máquina local
 
 export default function CadastrarAlunoScreen({ navigation }) {
   const [nome, setNome] = useState('');
@@ -25,7 +25,6 @@ export default function CadastrarAlunoScreen({ navigation }) {
   const [imagem, setImagem] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // ✅ Solicita permissão para acessar a galeria
   useEffect(() => {
     (async () => {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -35,7 +34,6 @@ export default function CadastrarAlunoScreen({ navigation }) {
     })();
   }, []);
 
-  // ✅ Seleciona imagem da galeria
   const selecionarImagem = async () => {
     try {
       const resultado = await ImagePicker.launchImageLibraryAsync({
@@ -55,7 +53,6 @@ export default function CadastrarAlunoScreen({ navigation }) {
     }
   };
 
-  // ✅ Envia os dados para o backend
   const handleCadastroAluno = async () => {
     if (!nome || !email || !senha || !telefone || !matricula) {
       return Alert.alert('Erro', 'Por favor, preencha todos os campos.');
@@ -76,8 +73,6 @@ export default function CadastrarAlunoScreen({ navigation }) {
     try {
       const response = await axios.post(`${API_URL}/auth/register`, dadosNovoAluno);
       Alert.alert('Sucesso!', response.data);
-
-      // Limpa os campos
       setNome('');
       setEmail('');
       setSenha('');
@@ -97,7 +92,6 @@ export default function CadastrarAlunoScreen({ navigation }) {
       <Text style={styles.title}>Cadastrar Novo Aluno</Text>
       <Text style={styles.subtitle}>Preencha todos os dados do novo aluno.</Text>
 
-      {/* Foto */}
       <TouchableOpacity onPress={selecionarImagem} style={{ alignSelf: 'center', marginBottom: 20 }}>
         {imagem ? (
           <Image source={{ uri: imagem }} style={styles.avatar} />
