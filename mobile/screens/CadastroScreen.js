@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity, ScrollView, Image, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.100.8:3001'; // Atualize se necessário
+const API_URL = 'http://192.168.1.80:3001'; // Atualize se necessário
 
 export default function CadastroScreen({ navigation }) {
   const [nome, setNome] = useState('');

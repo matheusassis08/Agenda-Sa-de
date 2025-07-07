@@ -1,10 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, RefreshControl } from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+  Alert,
+  RefreshControl
+} from 'react-native';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.100.8:3001'; // Confirme se é seu IP local
+const API_URL = 'http://192.168.1.80:3001';
 
-export default function ConfirmarConsultasScreen({ userData }) {
+export default function ConfirmarConsultasScreen({ userData, atualizarResumo }) {
   const [pendentes, setPendentes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -39,6 +48,10 @@ export default function ConfirmarConsultasScreen({ userData }) {
       await axios.post(`${API_URL}/consultas/${rota}/${consultaId}`, {}, config);
       Alert.alert('Sucesso', mensagemSucesso);
       setPendentes(prev => prev.filter(p => p._id !== consultaId));
+
+      if (typeof atualizarResumo === 'function') {
+        atualizarResumo(); // 👈 atualiza dados da tela inicial
+      }
     } catch (error) {
       Alert.alert('Erro', `Não foi possível executar a ação.`);
       console.error(`Erro ao ${action}:`, error.response?.data || error.message);
@@ -108,5 +121,6 @@ const styles = StyleSheet.create({
   cancelButton: { backgroundColor: '#e74c3c' },
   buttonText: { color: 'white', fontWeight: 'bold' }
 });
+
 
 

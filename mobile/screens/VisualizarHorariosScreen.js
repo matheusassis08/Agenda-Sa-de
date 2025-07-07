@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, ActivityIndicator, RefreshControl, To
 import { MaterialIcons } from '@expo/vector-icons';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.100.8:3001'; // Use o seu IP local
+const API_URL = 'http://192.168.1.80:3001'; // Use o seu IP local
 
 const HorarioItem = ({ item, onDelete }) => (
   <View style={styles.itemContainer}>

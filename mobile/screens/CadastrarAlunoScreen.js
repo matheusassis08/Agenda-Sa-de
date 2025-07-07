@@ -14,7 +14,7 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.100.8:3001'; // Use o IP da sua máquina local
+const API_URL = 'http://192.168.1.80:3001'; // Use o IP da sua máquina local
 
 export default function CadastrarAlunoScreen({ navigation }) {
   const [nome, setNome] = useState('');

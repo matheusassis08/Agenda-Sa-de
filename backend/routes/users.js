@@ -17,7 +17,7 @@ const auth = (req, res, next) => {
     }
 };
 
-// Rota para um utilizador autenticado editar o seu próprio perfil (nome e telefone)
+// Editar o próprio perfil (cliente, aluno ou coordenador)
 router.put('/perfil', auth, async (req, res) => {
     try {
         const { nome, telefone } = req.body;
@@ -36,4 +36,72 @@ router.put('/perfil', auth, async (req, res) => {
     }
 });
 
+// Coordenador lista todos os alunos cadastrados
+router.get('/alunos', auth, async (req, res) => {
+    if (req.user.tipo !== 'coordenador') {
+        return res.status(403).json({ message: 'Apenas coordenadores podem visualizar os alunos.' });
+    }
+
+    try {
+        const alunos = await User.find({ tipo: 'aluno' }).select('nome email telefone foto matricula');
+        res.json(alunos);
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao buscar alunos.' });
+    }
+});
+
+// Coordenador edita qualquer aluno
+router.put('/editar-aluno/:id', auth, async (req, res) => {
+  if (req.user.tipo !== 'coordenador') {
+    return res.status(403).json({ message: 'Apenas coordenadores podem editar alunos.' });
+  }
+
+  try {
+    const { nome, email, telefone, matricula } = req.body;
+
+    // Encontra o aluno pelo ID e garante que é do tipo aluno
+    const aluno = await User.findOne({ _id: req.params.id, tipo: 'aluno' });
+
+    if (!aluno) {
+      return res.status(404).json({ message: 'Aluno não encontrado.' });
+    }
+
+    // Atualiza os campos apenas se fornecidos
+    if (nome) aluno.nome = nome;
+    if (email) aluno.email = email;
+    if (telefone) aluno.telefone = telefone;
+    if (matricula) aluno.matricula = matricula;
+
+    await aluno.save();
+
+    res.json({ message: 'Aluno atualizado com sucesso!', aluno });
+  } catch (error) {
+    console.error('Erro ao atualizar aluno:', error);
+    res.status(500).json({ message: 'Erro no servidor ao atualizar o aluno.' });
+  }
+});
+
+// Coordenador exclui um aluno
+router.delete('/excluir-aluno/:id', auth, async (req, res) => {
+  if (req.user.tipo !== 'coordenador') {
+    return res.status(403).json({ message: 'Apenas coordenadores podem excluir alunos.' });
+  }
+
+  try {
+    const aluno = await User.findOneAndDelete({ _id: req.params.id, tipo: 'aluno' });
+
+    if (!aluno) {
+      return res.status(404).json({ message: 'Aluno não encontrado.' });
+    }
+
+    res.json({ message: 'Aluno excluído com sucesso.' });
+  } catch (error) {
+    console.error('Erro ao excluir aluno:', error);
+    res.status(500).json({ message: 'Erro no servidor ao excluir o aluno.' });
+  }
+});
+
+
+
 module.exports = router;
+

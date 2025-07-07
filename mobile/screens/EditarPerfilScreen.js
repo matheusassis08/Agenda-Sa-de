@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, ActivityIndicator, Image } from 'react-native';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.100.8:3001'; // Use o seu IP local
+const API_URL = 'http://192.168.1.80:3001'; // Use o seu IP local
 
 export default function EditarPerfilScreen({ userData }) {
   const [nome, setNome] = useState(userData.nome);
