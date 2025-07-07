@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.100.8:3001'; // Confirme se este IP é da sua máquina
+const API_URL = 'http://192.168.100.8:3001'; // Confirme se é o IP da sua máquina backend
 
 export default function TelaHorariosDisponiveis({ userData }) {
   const [horarios, setHorarios] = useState([]);
@@ -22,10 +22,9 @@ export default function TelaHorariosDisponiveis({ userData }) {
   const fetchHorarios = async () => {
     try {
       const response = await axios.get(`${API_URL}/consultas/disponiveis`);
-      console.log("📸 Dados recebidos:", response.data); // Útil para debug
       setHorarios(response.data);
     } catch (error) {
-      console.error(error);
+      console.error('Erro ao buscar horários:', error.message);
       Alert.alert('Erro', 'Não foi possível carregar os horários.');
     } finally {
       setLoading(false);
@@ -33,7 +32,9 @@ export default function TelaHorariosDisponiveis({ userData }) {
     }
   };
 
-  useEffect(() => { fetchHorarios(); }, []);
+  useEffect(() => {
+    fetchHorarios();
+  }, []);
 
   const handleAgendamento = (consultaId) => {
     Alert.alert("Confirmar Pré-Agendamento", "Deseja enviar a solicitação para este horário?", [
@@ -59,36 +60,47 @@ export default function TelaHorariosDisponiveis({ userData }) {
     fetchHorarios();
   };
 
-  const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.item} onPress={() => handleAgendamento(item._id)}>
-      <View style={styles.row}>
-        {item.aluno?.foto ? (
-          <Image source={{ uri: item.aluno.foto }} style={styles.avatar} />
-        ) : (
-          <View style={styles.avatarPlaceholder}>
-            <Text style={styles.avatarInitial}>{item.aluno?.nome?.charAt(0) || 'U'}</Text>
-          </View>
-        )}
-        <View style={{ marginLeft: 12 }}>
-          <Text style={styles.nome}>Atendimento com: {item.aluno?.nome || 'N/A'}</Text>
-          <Text style={styles.data}>
-            Data: {new Date(item.dataHora).toLocaleDateString('pt-BR')}
-          </Text>
-          <Text style={styles.data}>
-            Horário: {new Date(item.dataHora).toLocaleTimeString('pt-BR', {
-              hour: '2-digit',
-              minute: '2-digit',
-            })}
-          </Text>
-        </View>
-      </View>
-      <View style={styles.button}>
-        <Text style={styles.buttonText}>Solicitar Horário</Text>
-      </View>
-    </TouchableOpacity>
-  );
+  const renderItem = ({ item }) => {
+    const aluno = item.aluno || {};
+    const fotoValida = aluno.foto && aluno.foto.startsWith('http');
 
-  if (loading) return <View style={styles.center}><ActivityIndicator size="large" /></View>;
+    return (
+      <TouchableOpacity style={styles.item} onPress={() => handleAgendamento(item._id)}>
+        <View style={styles.row}>
+          {fotoValida ? (
+            <Image source={{ uri: aluno.foto }} style={styles.avatar} />
+          ) : (
+            <View style={styles.avatarPlaceholder}>
+              <Text style={styles.avatarInitial}>{aluno.nome?.charAt(0) || 'U'}</Text>
+            </View>
+          )}
+          <View style={{ marginLeft: 12 }}>
+            <Text style={styles.nome}>Atendimento com: {aluno.nome || 'N/A'}</Text>
+            <Text style={styles.data}>
+              Data: {new Date(item.dataHora).toLocaleDateString('pt-BR')}
+            </Text>
+            <Text style={styles.data}>
+              Horário: {new Date(item.dataHora).toLocaleTimeString('pt-BR', {
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.button}>
+          <Text style={styles.buttonText}>Solicitar Horário</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -97,8 +109,12 @@ export default function TelaHorariosDisponiveis({ userData }) {
         data={horarios}
         renderItem={renderItem}
         keyExtractor={(item) => item._id}
-        ListEmptyComponent={<Text style={styles.subtitle}>Nenhum horário disponível no momento.</Text>}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+        ListEmptyComponent={
+          <Text style={styles.subtitle}>Nenhum horário disponível no momento.</Text>
+        }
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       />
     </View>
   );
