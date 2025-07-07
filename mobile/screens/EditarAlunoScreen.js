@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.1.80:3001'; // ajuste para seu IP real
+const API_URL = 'http://192.168.0.127:3001'; // ajuste para seu IP real
 
 export default function EditarAlunoScreen({ route, navigation }) {
   const { aluno, userData } = route.params;

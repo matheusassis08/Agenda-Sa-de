@@ -11,7 +11,7 @@ import {
 import axios from 'axios';
 import { useFocusEffect } from '@react-navigation/native';
 
-const API_URL = 'http://192.168.1.80:3001';
+const API_URL = 'http://192.168.0.127:3001';
 
 export default function ListaAlunosScreen({ userData, navigation }) {
   const [alunos, setAlunos] = useState([]);

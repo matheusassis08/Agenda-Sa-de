@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Alert, RefreshControl } from 'react-native';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.1.80:3001'; // Use o seu IP local
+const API_URL = 'http://192.168.0.127:3001'; // Use o seu IP local
 
 const getStatusStyle = (status) => {
   switch (status) {

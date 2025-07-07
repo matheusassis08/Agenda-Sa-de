@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 
 const Drawer = createDrawerNavigator();
-const API_URL = 'http://192.168.1.80:3001';
+const API_URL = 'http://192.168.0.127:3001';
 
 // Função para definir cor e texto do status
 const getStatusStyle = (status) => {

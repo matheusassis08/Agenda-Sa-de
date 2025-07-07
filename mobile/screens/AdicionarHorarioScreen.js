@@ -7,7 +7,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 // <<< VERIFICAÇÃO 1: A URL da API está correta? >>>
 // Confirme se este é o IP da máquina onde o seu backend está a rodar.
-const API_URL = 'http://192.168.1.80:3001'; 
+const API_URL = 'http://192.168.0.127:3001'; 
 
 // <<< VERIFICAÇÃO 2: A tela recebe 'userData' com o token? >>>
 // A função agora recebe 'userData' como uma propriedade (prop).

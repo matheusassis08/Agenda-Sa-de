@@ -10,6 +10,7 @@ import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import { useFocusEffect } from '@react-navigation/native';
 
+// Importando todas as telas que o coordenador vai usar
 import CadastrarAlunoScreen from './CadastrarAlunoScreen';
 import AdicionarHorarioScreen from './AdicionarHorarioScreen';
 import VisualizarHorariosScreen from './VisualizarHorariosScreen';
@@ -19,8 +20,9 @@ import ListaAlunosScreen from './ListaAlunosScreen';
 import EditarAlunoScreen from './EditarAlunoScreen';
 
 const Drawer = createDrawerNavigator();
-const API_URL = 'http://192.168.1.80:3001';
+const API_URL = 'http://192.168.0.127:3001'; // Use o seu IP local
 
+// Componente para a tela de boas-vindas que mostra os cartões de resumo
 function BoasVindas({ userData, resumo, loading }) {
   if (loading) {
     return (
@@ -58,20 +60,25 @@ function BoasVindas({ userData, resumo, loading }) {
   );
 }
 
+// O componente principal do Dashboard
 export default function DashboardCoordenador({ route, navigation }) {
   const { userData } = route.params;
   const [resumo, setResumo] = useState({ alunos: 0, horarios: 0, solicitacoes: 0 });
   const [loading, setLoading] = useState(true);
 
+  // Função que busca os dados para os cartões do dashboard
   const fetchResumo = async () => {
     try {
       setLoading(true);
       const config = { headers: { Authorization: `Bearer ${userData.token}` } };
+      
+      // Faz todas as chamadas à API em paralelo para maior eficiência
       const [alunosRes, horariosRes, solicitacoesRes] = await Promise.all([
         axios.get(`${API_URL}/alunos`, config),
         axios.get(`${API_URL}/consultas/disponiveis`),
         axios.get(`${API_URL}/consultas/pendentes`, config),
       ]);
+      
       setResumo({
         alunos: alunosRes.data.length || 0,
         horarios: horariosRes.data.length || 0,
@@ -84,6 +91,8 @@ export default function DashboardCoordenador({ route, navigation }) {
     }
   };
 
+  // useFocusEffect garante que os dados do resumo são atualizados
+  // sempre que o utilizador volta para a tela de Início.
   useFocusEffect(
     useCallback(() => {
       fetchResumo();
@@ -96,7 +105,7 @@ export default function DashboardCoordenador({ route, navigation }) {
       screenOptions={{
         drawerActiveTintColor: '#007bff',
         drawerLabelStyle: { fontSize: 16 },
-        headerShown: true,
+        headerShown: true, // Mostra o cabeçalho em todas as telas do drawer
       }}
       drawerContent={(props) => (
         <DrawerContentScrollView {...props}>
@@ -133,7 +142,7 @@ export default function DashboardCoordenador({ route, navigation }) {
           ),
         }}
       >
-        {(props) => <CadastrarAlunoScreen {...props} userData={userData} />}
+        {(props) => <CadastrarAlunoScreen {...props} userData={userData} atualizarResumo={fetchResumo} />}
       </Drawer.Screen>
 
       <Drawer.Screen
@@ -144,7 +153,7 @@ export default function DashboardCoordenador({ route, navigation }) {
           ),
         }}
       >
-        {(props) => <ListaAlunosScreen {...props} userData={userData} />}
+        {(props) => <ListaAlunosScreen {...props} userData={userData} atualizarResumo={fetchResumo} />}
       </Drawer.Screen>
 
       <Drawer.Screen
@@ -159,7 +168,7 @@ export default function DashboardCoordenador({ route, navigation }) {
           <ConfirmarConsultasScreen
             {...props}
             userData={userData}
-            atualizarResumo={fetchResumo} // 👈 Envia função para atualizar
+            atualizarResumo={fetchResumo}
           />
         )}
       </Drawer.Screen>
@@ -172,7 +181,7 @@ export default function DashboardCoordenador({ route, navigation }) {
           ),
         }}
       >
-        {(props) => <VisualizarHorariosScreen {...props} userData={userData} />}
+        {(props) => <VisualizarHorariosScreen {...props} userData={userData} atualizarResumo={fetchResumo} />}
       </Drawer.Screen>
 
       <Drawer.Screen
@@ -183,7 +192,7 @@ export default function DashboardCoordenador({ route, navigation }) {
           ),
         }}
       >
-        {(props) => <AdicionarHorarioScreen {...props} userData={userData} />}
+        {(props) => <AdicionarHorarioScreen {...props} userData={userData} atualizarResumo={fetchResumo} />}
       </Drawer.Screen>
 
       <Drawer.Screen
@@ -197,11 +206,12 @@ export default function DashboardCoordenador({ route, navigation }) {
         {(props) => <EditarPerfilScreen {...props} userData={userData} />}
       </Drawer.Screen>
 
+      {/* Tela escondida do menu, usada apenas para navegação */}
       <Drawer.Screen
         name="Editar Aluno"
         options={{
-          drawerItemStyle: { display: 'none' },
-          headerShown: true,
+          drawerItemStyle: { display: 'none' }, // Esconde do menu lateral
+          headerShown: true, // Garante que tem um cabeçalho com botão de voltar
         }}
       >
         {(props) => <EditarAlunoScreen {...props} userData={userData} />}
@@ -231,5 +241,3 @@ const styles = StyleSheet.create({
   cardTitle: { fontSize: 14, color: '#333', marginTop: 5 },
   cardValue: { fontSize: 16, fontWeight: 'bold', color: '#007bff', marginTop: 4 },
 });
-
-
