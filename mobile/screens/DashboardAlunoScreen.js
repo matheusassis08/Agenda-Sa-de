@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItem, DrawerItemList } from '@react-navigation/drawer';
 import { View, Text, FlatList, StyleSheet, ActivityIndicator, Alert, RefreshControl } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 
 const Drawer = createDrawerNavigator();
-const API_URL = 'http://192.168.100.8:3001'; // Use o seu IP local
+const API_URL = 'http://192.168.1.80:3001';
 
-// Função para dar cor e texto ao status
+// Função para definir cor e texto do status
 const getStatusStyle = (status) => {
   switch (status) {
     case 'confirmada': return { backgroundColor: '#2ecc71', text: 'Confirmada' };
@@ -16,7 +17,7 @@ const getStatusStyle = (status) => {
   }
 };
 
-// --- Tela Principal da Agenda do Aluno ---
+// Tela da Agenda do Aluno
 function AgendaAlunoScreen({ userData }) {
   const [agenda, setAgenda] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,7 +25,6 @@ function AgendaAlunoScreen({ userData }) {
 
   const fetchAgenda = async () => {
     try {
-      // Esta rota é protegida, precisa do token do aluno
       const config = { headers: { Authorization: `Bearer ${userData.token}` } };
       const response = await axios.get(`${API_URL}/consultas/aluno`, config);
       setAgenda(response.data);
@@ -37,7 +37,6 @@ function AgendaAlunoScreen({ userData }) {
   };
 
   useEffect(() => { fetchAgenda(); }, []);
-
   const onRefresh = () => { setRefreshing(true); fetchAgenda(); };
 
   const renderItem = ({ item }) => {
@@ -45,7 +44,6 @@ function AgendaAlunoScreen({ userData }) {
     return (
       <View style={styles.item}>
         <Text style={styles.itemTitle}>
-          {/* Mostra o nome do cliente ou "Horário Vago" */}
           Cliente: {item.cliente?.nome || <Text style={styles.vagoText}>Horário Vago</Text>}
         </Text>
         <Text style={styles.itemText}>Data: {new Date(item.dataHora).toLocaleString('pt-BR')}</Text>
@@ -74,43 +72,54 @@ function AgendaAlunoScreen({ userData }) {
   );
 }
 
-// --- Componente Principal do Dashboard do Aluno ---
+// Dashboard do Aluno
 export default function DashboardAluno({ route, navigation }) {
-    // Pega os dados do aluno (com ID e token) que vieram da tela de Login
-    const { userData } = route.params;
+  const { userData } = route.params;
 
-    return (
-        <Drawer.Navigator 
-            initialRouteName="Minha Agenda"
-            drawerContent={(props) => (
-                <DrawerContentScrollView {...props}>
-                  <DrawerItemList {...props} />
-                  <DrawerItem 
-                    label="Sair" 
-                    onPress={() => navigation.replace('Login')} 
-                    labelStyle={{ color: 'red' }} 
-                  />
-                </DrawerContentScrollView>
-              )}
-        >
-          <Drawer.Screen name="Minha Agenda">
-            {(props) => <AgendaAlunoScreen {...props} userData={userData} />}
-          </Drawer.Screen>
-          
-          {/* Pode adicionar outras telas para o aluno aqui no futuro */}
-        </Drawer.Navigator>
-    );
+  return (
+    <Drawer.Navigator
+      initialRouteName="Minha Agenda"
+      screenOptions={{
+        drawerActiveTintColor: '#007bff',
+        drawerLabelStyle: { fontSize: 16 },
+        headerShown: true,
+      }}
+      drawerContent={(props) => (
+        <DrawerContentScrollView {...props}>
+          <DrawerItemList {...props} />
+          <DrawerItem
+            label="Sair"
+            icon={({ color, size }) => <Ionicons name="exit-outline" size={size} color="red" />}
+            onPress={() => navigation.replace('Login')}
+            labelStyle={{ color: 'red', fontWeight: 'bold' }}
+          />
+        </DrawerContentScrollView>
+      )}
+    >
+      <Drawer.Screen
+        name="Minha Agenda"
+        options={{
+          drawerIcon: ({ color, size }) => <Ionicons name="calendar-outline" size={size} color={color} />
+        }}
+      >
+        {(props) => <AgendaAlunoScreen {...props} userData={userData} />}
+      </Drawer.Screen>
+
+      {/* Outras telas futuras podem ser adicionadas aqui */}
+    </Drawer.Navigator>
+  );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 16, backgroundColor: '#f9f9f9' },
-    center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
-    emptyText: { textAlign: 'center', marginTop: 30, fontSize: 16, color: 'gray' },
-    item: { backgroundColor: 'white', padding: 15, borderRadius: 10, marginVertical: 8, elevation: 2 },
-    itemTitle: { fontSize: 18, fontWeight: '600', marginBottom: 5 },
-    itemText: { fontSize: 16, color: '#555', marginTop: 4 },
-    vagoText: { fontStyle: 'italic', color: '#7f8c8d' },
-    statusBadge: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: 15, alignSelf: 'flex-start', marginTop: 10 },
-    statusText: { color: 'white', fontWeight: 'bold' },
+  container: { flex: 1, padding: 16, backgroundColor: '#f9f9f9' },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
+  emptyText: { textAlign: 'center', marginTop: 30, fontSize: 16, color: 'gray' },
+  item: { backgroundColor: 'white', padding: 15, borderRadius: 10, marginVertical: 8, elevation: 2 },
+  itemTitle: { fontSize: 18, fontWeight: '600', marginBottom: 5 },
+  itemText: { fontSize: 16, color: '#555', marginTop: 4 },
+  vagoText: { fontStyle: 'italic', color: '#7f8c8d' },
+  statusBadge: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: 15, alignSelf: 'flex-start', marginTop: 10 },
+  statusText: { color: 'white', fontWeight: 'bold' },
 });
+

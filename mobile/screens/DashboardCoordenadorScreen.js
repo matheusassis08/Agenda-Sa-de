@@ -1,17 +1,18 @@
 import React from 'react';
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer';
 import { View, Text, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons'; // Ícones
 
-// Importando todas as telas que o coordenador vai usar
+// Telas usadas
 import CadastrarAlunoScreen from './CadastrarAlunoScreen';
 import AdicionarHorarioScreen from './AdicionarHorarioScreen';
 import VisualizarHorariosScreen from './VisualizarHorariosScreen';
 import ConfirmarConsultasScreen from './ConfirmarConsultasScreen';
-import EditarPerfilScreen from './EditarPerfilScreen'; // Importando a nova tela
+import EditarPerfilScreen from './EditarPerfilScreen';
 
 const Drawer = createDrawerNavigator();
 
-// Componente para a tela de boas-vindas
+// Tela de boas-vindas
 function BoasVindas({ userData }) {
   return (
     <View style={styles.container}>
@@ -21,56 +22,82 @@ function BoasVindas({ userData }) {
   );
 }
 
-// O componente principal do Dashboard
 export default function DashboardCoordenador({ route, navigation }) {
-  // Pega os dados do utilizador (com o token) que vieram da tela de Login
   const { userData } = route.params;
 
   return (
     <Drawer.Navigator
       initialRouteName="Início"
+      screenOptions={{
+        drawerActiveTintColor: '#007bff',
+        drawerLabelStyle: { fontSize: 16 },
+        headerShown: true
+      }}
       drawerContent={(props) => (
         <DrawerContentScrollView {...props}>
           <DrawerItemList {...props} />
           <DrawerItem
             label="Sair"
+            icon={({ color, size }) => <Ionicons name="exit-outline" size={size} color="red" />}
             onPress={() => navigation.replace('Login')}
             labelStyle={{ color: 'red', fontWeight: 'bold' }}
           />
         </DrawerContentScrollView>
       )}
     >
-      {/* Usamos uma função anónima para passar 'userData' como prop para cada tela */}
-      <Drawer.Screen name="Início">
+      <Drawer.Screen
+        name="Início"
+        options={{
+          drawerIcon: ({ color, size }) => <Ionicons name="home-outline" size={size} color={color} />
+        }}
+      >
         {(props) => <BoasVindas {...props} userData={userData} />}
       </Drawer.Screen>
 
-      {/* Opção 1: Cadastrar Aluno */}
-      <Drawer.Screen name="Cadastrar Aluno">
+      <Drawer.Screen
+        name="Cadastrar Aluno"
+        options={{
+          drawerIcon: ({ color, size }) => <Ionicons name="person-add-outline" size={size} color={color} />
+        }}
+      >
         {(props) => <CadastrarAlunoScreen {...props} userData={userData} />}
       </Drawer.Screen>
 
-      {/* Opção 2: Confirmar ou Cancelar Pré-Agendamento */}
-      <Drawer.Screen name="Gerir Solicitações">
+      <Drawer.Screen
+        name="Gerir Solicitações"
+        options={{
+          drawerIcon: ({ color, size }) => <Ionicons name="calendar-outline" size={size} color={color} />
+        }}
+      >
         {(props) => <ConfirmarConsultasScreen {...props} userData={userData} />}
       </Drawer.Screen>
-      
-      {/* Opção 3: Adicionar ou Remover Horários */}
-      {/* A tela 'VisualizarHorariosScreen' já permite ver e remover horários */}
-      <Drawer.Screen name="Gerir Horários">
+
+      <Drawer.Screen
+        name="Gerir Horários"
+        options={{
+          drawerIcon: ({ color, size }) => <Ionicons name="time-outline" size={size} color={color} />
+        }}
+      >
         {(props) => <VisualizarHorariosScreen {...props} userData={userData} />}
       </Drawer.Screen>
 
-      {/* Opção 4: Adicionar Horário (atalho, se desejar) */}
-      <Drawer.Screen name="Adicionar Horário (Atalho)">
+      <Drawer.Screen
+        name="Adicionar Horário (Atalho)"
+        options={{
+          drawerIcon: ({ color, size }) => <Ionicons name="add-circle-outline" size={size} color={color} />
+        }}
+      >
         {(props) => <AdicionarHorarioScreen {...props} userData={userData} />}
       </Drawer.Screen>
-      
-      {/* Opção 5: Editar Perfil */}
-      <Drawer.Screen name="Editar Perfil">
+
+      <Drawer.Screen
+        name="Editar Perfil"
+        options={{
+          drawerIcon: ({ color, size }) => <Ionicons name="settings-outline" size={size} color={color} />
+        }}
+      >
         {(props) => <EditarPerfilScreen {...props} userData={userData} />}
       </Drawer.Screen>
-
     </Drawer.Navigator>
   );
 }
@@ -80,3 +107,4 @@ const styles = StyleSheet.create({
   welcome: { fontSize: 24, fontWeight: 'bold', color: '#333', textAlign: 'center' },
   userName: { fontSize: 20, color: '#007bff', marginTop: 8 }
 });
+

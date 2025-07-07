@@ -3,7 +3,7 @@ import { View, Text, TextInput, Button, StyleSheet, Alert, ScrollView, ActivityI
 import * as ImagePicker from 'expo-image-picker';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.100.8:3001';
+const API_URL = 'http://192.168.1.80:3001';
 
 export default function CadastrarAlunoScreen({ navigation }) {
   const [nome, setNome] = useState('');

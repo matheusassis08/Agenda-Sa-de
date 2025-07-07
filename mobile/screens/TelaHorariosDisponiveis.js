@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.100.8:3001'; // Confirme se este IP é da sua máquina
+const API_URL = 'http://192.168.1.80:3001'; // Confirme se este IP é da sua máquina
 
 export default function TelaHorariosDisponiveis({ userData }) {
   const [horarios, setHorarios] = useState([]);

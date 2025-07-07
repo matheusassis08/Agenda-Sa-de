@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, TextInput, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 
-const API_URL = 'http://192.168.100.8:3001';
+const API_URL = 'http://192.168.1.80:3001';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
