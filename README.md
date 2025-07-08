@@ -1,4 +1,4 @@
-# Sistema de Agendamento para Clínica Escola de Nutrição
+# Sistema de Agendamento para Clínica de Nutrição
 
 Este projeto é uma solução completa para a gestão de agendamentos da clínica de nutrição da faculdade, desenvolvida para modernizar e otimizar o processo de marcação de consultas, beneficiando clientes, alunos e coordenadores.
 
